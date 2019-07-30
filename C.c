@@ -1,13 +1,15 @@
 #include<stdio.h>
 #include<time.h>
 
-// 10¸¶¸®ÀÇ ¼­·Î ´Ù¸¥ µ¿¹° (°¢ Ä«µå 2Àå¾¿)
-// »ç¿ëÀÚ·ÎºÎÅÍ 2°³ÀÇ ÀÔ·Â°ªÀ» ¹Ş¾Æ¼­ -> °°Àº µ¿¹° Ã£À¸¸é Ä«µå µÚÁı±â
-// ¸ğµç µ¿¹° ½ÖÀ» Ã£À¸¸é °ÔÀÓ Á¾·á
-// ÃÑ ½ÇÆĞ È½¼ö ¾Ë·ÁÁÖ±â 
+// 10ë§ˆë¦¬ì˜ ì„œë¡œ ë‹¤ë¥¸ ë™ë¬¼ (ê° ì¹´ë“œ 2ì¥ì”©)
+// ì‚¬ìš©ìë¡œë¶€í„° 2ê°œì˜ ì…ë ¥ê°’ì„ ë°›ì•„ì„œ -> ê°™ì€ ë™ë¬¼ ì°¾ìœ¼ë©´ ì¹´ë“œ ë’¤ì§‘ê¸°
+// ëª¨ë“  ë™ë¬¼ ìŒì„ ì°¾ìœ¼ë©´ ê²Œì„ ì¢…ë£Œ
+// ì´ ì‹¤íŒ¨ íšŸìˆ˜ ì•Œë ¤ì£¼ê¸° 
 
-int arrayAnimal[4][5]; // Ä«µå Áöµµ (20ÀåÀÇ Ä«µå) 
-char *strAnimal[10];	
+int arrayAnimal[4][5]; // ì¹´ë“œ ì§€ë„ (20ì¥ì˜ ì¹´ë“œ) 
+int checkAnimal[4][5]; // ë’¤ì§‘í˜”ëŠ”ì§€ ì—¬ë¶€ í™•ì¸ 
+char *strAnimal[10];
+
 
 void initAnimalArray();
 void initAnimalName();
@@ -15,9 +17,19 @@ void shuffleAnimal();
 int getEmptyPosition();
 int conv_pos_x(int);
 int conv_pos_y(int);
+void printAnimals();
+void printQuestion();
+int foundAllAnimals();
 
 void main() {
 	
+	int failCount = 0; // ì‹¤íŒ¨ íšŸìˆ˜
+	int select1 = 0; // ì‚¬ìš©ìê°€ ì„ íƒí•œ ì²˜ìŒ ìˆ˜ 
+	int select2 = 0; // ìƒìš©ìê°€ ì„ íƒí•œ ë‘ë²ˆì§¸ ìˆ˜ 
+	int firstSelect_x;
+	int firstSelect_y;
+	int secondSelect_x;
+	int secondSelect_y;
 	
 	srand(time(NULL));
 	
@@ -25,6 +37,59 @@ void main() {
 	initAnimalName();
 	
 	shuffleAnimal(); 
+	
+	while (1) {
+		select1 = 0;
+		select2 = 0;
+		
+		printAnimals(); // ë™ë¬¼ ìœ„ì¹˜ ì¶œë ¥ 
+		printQuestion(); // ë¬¸ì œ ì¶œë ¥ (ì¹´ë“œ ì§€ë„)
+		printf("ë’¤ì§‘ì„ ì¹´ë“œë¥¼ 2ê°œ ê³ ë¥´ì„¸ìš” : ");
+		scanf_s("%d %d",&select1, &select2);
+		
+		if( select1 == select2) // ê°™ì€ ì¹´ë“œ ì„ íƒ ì‹œ ë¬´íš¨ 
+			continue;
+		
+		// ì¢Œí‘œì— í•´ë‹¹í•˜ëŠ” ì¹´ë“œë¥¼ ë’¤ì§‘ì–´ ë³´ê³  ê°™ì€ì§€ ì•ˆê°™ì€ì§€ í™•ì¸ 
+		firstSelect_x = conv_pos_x(select1);
+		firstSelect_y = conv_pos_y(select1); 
+		
+		secondSelect_x = conv_pos_x(select2);
+		secondSelect_y = conv_pos_y(select2);
+		
+		// ê°™ì€ ë™ë¬¼ì¸ ê²½ìš°
+		
+		if((checkAnimal[firstSelect_x][firstSelect_y] == 0 // ì¹´ë“œê°€ ë’¤ì§‘íˆì§€ ì•Šì•˜ëŠ”ì§€  
+			&& checkAnimal[secondSelect_x][secondSelect_y] == 0)
+			&&
+			
+			(arrayAnimal[firstSelect_x][firstSelect_y]
+			== arrayAnimal[secondSelect_x][secondSelect_y])
+			) // ë‘ ë™ë¬¼ì´ ê°™ì€ì§€ 
+		{
+			printf("\n\në¹™ê³ ! : %s ë°œê²¬\n\n",strAnimal[arrayAnimal[firstSelect_x][firstSelect_y]]);
+			checkAnimal[firstSelect_x][firstSelect_y] = 1;
+			checkAnimal[secondSelect_x][secondSelect_y] = 1;
+		}
+		// ë‹¤ë¥¸ ë™ë¬¼ì¼ ê²½ìš° 
+		else
+		{
+			printf("\n\n ë•¡!! (í‹€ë ¸ê±°ë‚˜, ì´ë¯¸ ë’¤ì§‘íŒ ì¹´ë“œì…ë‹ˆë‹¤.)\n");
+			printf("%d : %s\n",select1, strAnimal[arrayAnimal[firstSelect_x][firstSelect_y]]); 
+			printf("%d : %s\n",select2, strAnimal[arrayAnimal[secondSelect_x][secondSelect_y]]);
+			printf("\n\n");
+			
+			failCount++;
+		}
+		
+		// ëª¨ë“  ë™ë¬¼ì„ ì°¾ì•˜ëŠ”ì§€ ì—¬ë¶€, 1 : ì°¸, 0 : ê±°ì§“ 
+		if(foundAllAnimals() == 1)
+		{
+			printf("\n\nì¶•í•˜í•©ë‹ˆë‹¤ ! ëª¨ë“  ë™ë¬¼ì„ ë‹¤ ì°¾ì•˜ë„¤ìš”.\n");
+			printf("ì§€ê¸ˆê¹Œì§€ ì´ %d ë²ˆ ì‹¤ìˆ˜í•˜ì˜€ìŠµë‹ˆë‹¤.\n\n", failCount);
+			break; 
+		}
+	}
 	
 }
 
@@ -39,27 +104,27 @@ void initAnimalArray() {
 }
 
 void initAnimalName() {
-	strAnimal[0] = "¿ø¼şÀÌ";
-	strAnimal[1] = "ÇÏ¸¶";
-	strAnimal[2] = "°­¾ÆÁö";
-	strAnimal[3] = "°í¾çÀÌ";
-	strAnimal[4] = "µÅÁö";
+	strAnimal[0] = "ì›ìˆ­ì´";
+	strAnimal[1] = "í•˜ë§ˆ";
+	strAnimal[2] = "ê°•ì•„ì§€";
+	strAnimal[3] = "ê³ ì–‘ì´";
+	strAnimal[4] = "ë¼ì§€";
 	
-	strAnimal[5] = "ÄÚ³¢¸®";
-	strAnimal[6] = "±â¸°";
-	strAnimal[7] = "³«Å¸";
-	strAnimal[8] = "Å¸Á¶";
-	strAnimal[9] = "È£¶ûÀÌ";
+	strAnimal[5] = "ì½”ë¼ë¦¬";
+	strAnimal[6] = "ê¸°ë¦°";
+	strAnimal[7] = "ë‚™íƒ€";
+	strAnimal[8] = "íƒ€ì¡°";
+	strAnimal[9] = "í˜¸ë‘ì´";
 }
 
 void shuffleAnimal() {
 	int i,j;
 	int pos,x,y;
 	
-	// ¤±¤±¤±¤±¤±
-	// ¤±¤±¤±¤±¤±
-	// ¤±¤±¤±¤±¤±
-	// ¤±¤±¤±¤±¤±
+	// ã…ã…ã…ã…ã…
+	// ã…ã…ã…ã…ã…
+	// ã…ã…ã…ã…ã…
+	// ã…ã…ã…ã…ã…
 	
 	for(i=0;i<10;i++) {
 		for(j=0;j<2;j++) {
@@ -72,18 +137,18 @@ void shuffleAnimal() {
 	}
 }
 
-// ÁÂÇ¥¿¡¼­ ºó °ø°£ Ã£±â 
+// ì¢Œí‘œì—ì„œ ë¹ˆ ê³µê°„ ì°¾ê¸° 
 int getEmptyPosition() {
 	int randPos;
 	int x,y; 
 	
-	// ¤±¤±¤±¤±¤±   0  1  2  3  4  -> 0 0 0 0 0
-	// ¤±¤±¤±¤±¤±   5  6  7  8  9  -> 1 1 1 1 1
-	// ¤±¤±¤±¤±¤±  10 11 12 13 14  -> 2 2 2 2 2
-	// ¤±¤±¤±¤±¤±  15 16 17 18 19  -> 3 3 3 3 3
+	// ã…ã…ã…ã…ã…   0  1  2  3  4  -> 0 0 0 0 0
+	// ã…ã…ã…ã…ã…   5  6  7  8  9  -> 1 1 1 1 1
+	// ã…ã…ã…ã…ã…  10 11 12 13 14  -> 2 2 2 2 2
+	// ã…ã…ã…ã…ã…  15 16 17 18 19  -> 3 3 3 3 3
 	
 	while(1) {
-		randPos = rand()%20; // 0 ~ 19 »çÀÌÀÇ ¼ıÀÚ ¹İÈ¯ 
+		randPos = rand()%20; // 0 ~ 19 ì‚¬ì´ì˜ ìˆ«ì ë°˜í™˜ 
 		// 19 -> (3,4)
 		x = conv_pos_x(randPos);
 		y = conv_pos_y(randPos);
@@ -101,6 +166,66 @@ int conv_pos_x(int x) {
 }
 
 int conv_pos_y(int y) {
-	// 19 -> 19 / 5 ? ¸òÀº 3, ³ª¸ÓÁö 4 
-	return y % 5; // y ¸¦ 5 ·Î ³ª´« ³ª¸ÓÁö °ª 
+	// 19 -> 19 / 5 ? ëª«ì€ 3, ë‚˜ë¨¸ì§€ 4 
+	return y % 5; // y ë¥¼ 5 ë¡œ ë‚˜ëˆˆ ë‚˜ë¨¸ì§€ ê°’ 
+}
+
+void printAnimals() { // ë™ë¬¼ ìœ„ì¹˜ ì¶œë ¥ 
+	// ã…ã…ã…ã…ã…  1  1  2  2  3
+	// ã…ã…ã…ã…ã…  3  4  4  5  5
+	// ã…ã…ã…ã…ã…
+	// ã…ã…ã…ã…ã…
+	
+	int i, j;
+	printf("\n===== ì´ê±´ ë¹„ë°€ì¸ë°.. ëª°ë˜ ë³´ì—¬ì¤ë‹ˆë‹¤. =====\n\n");	
+	for(i=0;i<4;i++) {
+		for(j=0;j<5;j++) {
+			printf("%8s",strAnimal[arrayAnimal[i][j]]);
+		}
+		printf("\n");
+	}
+	printf("\n==============================================\n\n");
+}
+
+void printQuestion() {
+	
+	int seq=0;
+	int i, j;
+	                    // seq                     //checkAnimal 
+	// ã…ã…ã…ã…ã…   0   1   2   3   4              0 0 0 0 0
+	// ã…ã…ã…ã…ã… í•˜ë§ˆ  6   7   8   9              1 0 0 0 0
+	// ã…ã…ã…ã…ã…  10  11  12 í•˜ë§ˆ 14              0 0 0 1 0
+	// ã…ã…ã…ã…ã…  15  16  17  18  19              0 0 0 0 0
+	
+	
+	
+	printf("\n\n(ë¬¸ì œ)\n");
+	
+	for(i=0;i<4;i++) {
+		for(j=0;j<5;j++) {
+			// ì¹´ë“œë¥¼ ë’¤ì§‘ì–´ì„œ ì •ë‹µì„ ë§í˜”ìœ¼ë©´ 'ë™ë¬¼ ì´ë¦„'
+			if(checkAnimal[i][j] != 0) {
+				printf("%8s",strAnimal[arrayAnimal[i][j]]);
+			}
+			// ì•„ì§ ë’¤ì§‘ì§€ ëª» í–ˆìœ¼ë©´ (ì •ë‹µì„ ëª» ë§í˜”ìœ¼ë©´) ë’·ë©´ -> ìœ„ì¹˜ë¥¼ ë‚˜íƒ€ë‚´ëŠ” ìˆ«ì 
+			else {
+				printf("%8d", seq);
+			}
+			seq++;
+		}
+		printf("\n");
+	}
+	
+}
+
+int foundAllAnimals() {
+	int i, j;
+	
+	for(i=0;i<4;i++) {
+		for(j=0;j<5;j++) {
+			if(checkAnimal[i][j] == 0)
+				return 0;
+		}
+	}
+	return 1; // ëª¨ë‘ ë‹¤ ì°¾ìŒ 
 }
